@@ -6,6 +6,7 @@ document.getElementById('add-note').addEventListener('click', () => {
     
     if (titleText.trim() !== '' && noteText.trim() !== '') {
         const note = {
+            id: Date.now(), // Add unique ID for each note
             title: titleText,
             text: noteText
         };
@@ -18,13 +19,27 @@ document.getElementById('add-note').addEventListener('click', () => {
         const notesContainer = document.getElementById('notes-container');
         const noteElement = document.createElement('div');
         noteElement.className = 'note';
+        noteElement.dataset.id = note.id;
         noteElement.innerHTML = `
-            <h3>${note.title}</h3>
+            <div class="note-header">
+                <h3>${note.title}</h3>
+                <button class="delete-btn" onclick="deleteNote(${note.id})">×</button>
+            </div>
             <p>${note.text}</p>
         `;
         notesContainer.appendChild(noteElement);
     }
 });
+
+function deleteNote(id) {
+    const noteElement = document.querySelector(`.note[data-id="${id}"]`);
+    if (noteElement) {
+        if (confirm('Are you sure you want to delete this note?')) {
+            notes = notes.filter(note => note.id !== id);
+            noteElement.remove();
+        }
+    }
+}
 
 document.getElementById('download-notes').addEventListener('click', () => {
     if (notes.length === 0) {
@@ -68,8 +83,12 @@ document.getElementById('import-file').addEventListener('change', (event) => {
                         const notesContainer = document.getElementById('notes-container');
                         const noteElement = document.createElement('div');
                         noteElement.className = 'note';
+                        noteElement.dataset.id = note.id;
                         noteElement.innerHTML = `
-                            <h3>${note.title}</h3>
+                            <div class="note-header">
+                                <h3>${note.title}</h3>
+                                <button class="delete-btn" onclick="deleteNote(${note.id})">×</button>
+                            </div>
                             <p>${note.text}</p>
                         `;
                         notesContainer.appendChild(noteElement);
