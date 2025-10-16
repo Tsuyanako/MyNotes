@@ -1,7 +1,14 @@
+@import url('https://fonts.cdnfonts.com/css/renasfi');
+
 body{
     background-color: #fff4e8;
     font-family: 'Comic Sans MS', cursive;
     min-height: 100vh;
+}
+
+h1{
+    font-family: 'Renasfi', 'Comic Sans MS', cursive;
+    margin-left: 6px;
 }
 
 button {

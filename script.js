@@ -6,7 +6,7 @@ document.getElementById('add-note').addEventListener('click', () => {
     
     if (titleText.trim() !== '' && noteText.trim() !== '') {
         const note = {
-            id: Date.now(), // Add unique ID for each note
+            id: Date.now(),
             title: titleText,
             text: noteText
         };
