@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="style.css" />
+        <title>My notes</title>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Your notes</h1>
+            <input type="file" id="import-file" accept=".json" style="display: none;">
+            <button id="import-notes">Import notes</button>
+            <button id="download-notes">Download notes</button>
+        </div>
+        <div class="input-container">
+            <div>
+                <input
+                    class="champ"
+                    type="text"
+                    id="noteTitle"
+                    name="title"
+                    required
+                    size="10"
+                    placeholder="Title"
+                />
+            </div>
+            <div>
+                <textarea
+                    class="champ"
+                    id="noteText"
+                    name="text"
+                    required
+                    rows="4"
+                    cols="50"
+                    placeholder="Write your note here..."
+                ></textarea>
+            </div>
+            <button id="add-note">Add note</button>
+        </div>
+        <hr />
+        <div id="notes-container"></div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
