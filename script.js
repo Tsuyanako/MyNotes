@@ -47,15 +47,15 @@ document.getElementById('download-notes').addEventListener('click', () => {
         return;
     }
 
-    const notesJson = JSON.stringify(notes, null, 2);
-    
-    const blob = new Blob([notesJson], { type: 'application/json' });
+    const notesTxt = notes.map(note => `Title: ${note.title}\n${note.text}`).join('\n\n---\n\n');
+
+    const blob = new Blob([notesTxt], { type: 'text/plain' });
     
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     const date = new Date().toISOString().split('T')[0];
     a.href = url;
-    a.download = `notes-${date}.json`;
+    a.download = `notes-${date}.txt`;
     
     document.body.appendChild(a);
     a.click();
@@ -74,12 +74,46 @@ document.getElementById('import-file').addEventListener('change', (event) => {
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
-                const importedNotes = JSON.parse(e.target.result);
-                
-                if (Array.isArray(importedNotes) && importedNotes.every(note => note.title && note.text)) {
+                const content = e.target.result;
+                let importedNotes = [];
+
+                const name = (file.name || '').toLowerCase();
+                const isJson = name.endsWith('.json') || content.trim().startsWith('[');
+
+                if (isJson) {
+                    importedNotes = JSON.parse(content);
+                } else {
+                    const blocks = content.split(/\r?\n-{3,}\r?\n/);
+                    blocks.forEach((block, index) => {
+                        const lines = block.split(/\r?\n/).filter(l => l.trim() !== '');
+                        if (lines.length === 0) return;
+
+                        let title = 'Untitled';
+                        let bodyLines = [];
+
+                        if (lines[0].startsWith('Title:')) {
+                            title = lines[0].replace(/^Title:\s*/, '').trim();
+                            bodyLines = lines.slice(1);
+                        } else {
+                            title = lines[0].trim();
+                            bodyLines = lines.slice(1);
+                        }
+
+                        const textBody = bodyLines.join('\n').trim();
+                        importedNotes.push({
+                            id: Date.now() + index,
+                            title,
+                            text: textBody
+                        });
+                    });
+                }
+
+                if (Array.isArray(importedNotes) && importedNotes.every(note => note.title !== undefined && note.text !== undefined)) {
                     importedNotes.forEach(note => {
+                        if (!note.id) note.id = Date.now() + Math.floor(Math.random() * 1000);
+
                         notes.push(note);
-                        
+
                         const notesContainer = document.getElementById('notes-container');
                         const noteElement = document.createElement('div');
                         noteElement.className = 'note';
@@ -93,7 +127,7 @@ document.getElementById('import-file').addEventListener('change', (event) => {
                         `;
                         notesContainer.appendChild(noteElement);
                     });
-                    
+
                     alert(`${importedNotes.length} notes imported successfully!`);
                 } else {
                     throw new Error('File format is invalid.');
